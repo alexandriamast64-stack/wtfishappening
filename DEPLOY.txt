@@ -1,0 +1,18 @@
+WTFisHappening — Vercel quick deploy
+
+1. Go to GitHub and create a new empty repository, e.g. wtfishappening.
+2. Upload ALL files from this project ZIP at the repository root:
+   - index.html
+   - api/headlines.js
+   - vercel.json
+   - package.json
+   - README.md
+3. Go to Vercel and sign in with GitHub.
+4. Add New → Project → import the wtfishappening repository.
+5. Framework preset: Other.
+6. Do not set a build command.
+7. Deploy.
+8. Open the generated https://....vercel.app URL on your phone.
+9. Open Journal → Headlines. The status should call /api/headlines on the same origin.
+
+No API key or paid service is required for this test.
