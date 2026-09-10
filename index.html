@@ -2045,14 +2045,42 @@ function renderEngine(){
   const state=document.getElementById("hardTriggerState");
   if(state) state.textContent=active.length ? `${active.length} active · score floored to ${WTF_DATA.hardTriggerFloor}+` : `None active · ${WTF_DATA.hardTriggerFloor}+ remains locked`;
 }
-function renderAll(){
+async function loadSharedCurrentState(){
+  try{
+    const response = await fetch("/api/current-state",{cache:"no-store"});
+    if(!response.ok) throw new Error(`HTTP ${response.status}`);
+
+    const data = await response.json();
+    const state = data?.state;
+
+    if(!data?.ok || !state) return false;
+
+    WTF_DATA.categories.conflict.score = state.conflict_score;
+    WTF_DATA.categories.greatPower.score = state.great_power_score;
+    WTF_DATA.categories.nuclear.score = state.nuclear_score;
+    WTF_DATA.categories.energy.score = state.energy_score;
+    WTF_DATA.categories.cyber.score = state.cyber_score;
+    WTF_DATA.categories.militaryPosture.score = state.military_posture_score;
+    WTF_DATA.categories.economic.score = state.economic_score;
+
+    return true;
+  }catch(error){
+    console.warn("Shared WTF state unavailable; using live local engines.",error);
+    return false;
+  }
+}
+  
+  function renderAll(){
   const score=calculateWtfScore();
   setHero(score);
   renderGauges();
   renderContrib();
   renderEngine();
 }
-setTimeout(renderAll,150);
+setTimeout(async()=>{
+  await loadSharedCurrentState();
+  renderAll();
+},150);
 
 const drawer=document.getElementById("drawer");
 function openDrawer(){drawer?.classList.add("open")}
