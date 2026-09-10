@@ -3137,6 +3137,11 @@ WTF_DATA.categories.conflict.score=Number(state.conflict_score);
 WTF_DATA.meta.lastCalculated=state.updated_at||new Date().toISOString();
 
 const score=Number(state.overall_score);
+        const engineState=$("engineState");
+if(engineState){
+  engineState.textContent="LIVE • CANONICAL";
+  engineState.className="engine-state live";
+}
         const headerScore=$("headerWtfScore");
 const headerStatus=$("headerWtfStatus");
 
