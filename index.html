@@ -3041,8 +3041,55 @@ document.getElementById("shuffleBtn")?.addEventListener("click",()=>{
   });
 
   // The category pages fetch asynchronously; poll the DOM and update once their live values land.
-  setTimeout(renderLive,500);
-  setInterval(renderLive,1000);
+  async function loadCanonicalState(){
+      try{
+    const r=await fetch("/api/current-state",{cache:"no-store"});
+    if(!r.ok)throw new Error(`HTTP ${r.status}`);
+    const payload=await r.json();
+    const state=payload.state;
+            if(!state)throw new Error("No current state");
+WTF_DATA.categories.conflict.score=Number(state.conflict_score);
+        WTF_DATA.categories.greatPower.score=Number(state.great_power_score);
+        WTF_DATA.categories.nuclear.score=Number(state.nuclear_score);
+        WTF_DATA.categories.energy.score=Number(state.energy_score);
+        WTF_DATA.categories.cyber.score=Number(state.cyber_score);
+        WTF_DATA.categories.military.score=Number(state.military_posture_score);
+        WTF_DATA.categories.economic.score=Number(state.economic_score);
+        WTF_DATA.meta.mode="canonical";
+WTF_DATA.meta.lastCalculated=state.updated_at||new Date().toISOString();
+
+const score=Number(state.overall_score);
+
+setHero(score);
+renderGauges();
+renderContrib();
+renderEngine();
+
+$("heroScore").textContent=score;
+$("heroStatus").textContent=state.status||getStatus(score);
+            const circumference=2*Math.PI*70;
+    const arc=$("heroArc");
+    if(arc){
+      arc.style.strokeDasharray=circumference;
+      arc.style.strokeDashoffset=circumference*(1-score/100);
+    }
+
+    const marker=document.querySelector("#page-command .scale-marker");
+    if(marker){
+      marker.style.left=`${score}%`;
+      const s=marker.querySelector("span");
+      if(s)s.textContent=score;
+    }
+
+  }catch(err){
+    console.error("Canonical state unavailable",err);
+  }
+}
+  loadCanonicalState();
+setInterval(loadCanonicalState,60000);
+   
+  // setTimeout(renderLive,500);
+ // setInterval(renderLive,1000);
 })();
 </script><script>
 (() => {
