@@ -3145,10 +3145,7 @@ if(engineState){
 const headerStatus=$("headerWtfStatus");
 
 if(headerScore)headerScore.textContent=score;
-if(headerStatus)headerStatus.textContent=
-  score>=82?"UH OH 😬":
-  score>=44?"GETTING SPICY 🌶️":
-  "WE'RE CHILLIN";
+if(headerStatus)headerStatus.textContent=state.status||getStatus(score);
 
 setHero(score);
 renderGauges();
