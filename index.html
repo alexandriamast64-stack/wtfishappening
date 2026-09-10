@@ -3236,7 +3236,55 @@ $("heroStatus").textContent=state.status||getStatus(score);
   }
 }
 
-loadScoreHistory();
+
+  async function loadJournal(){
+  try{
+    const r=await fetch("/api/journal",{cache:"no-store"});
+    if(!r.ok)throw new Error(`HTTP ${r.status}`);
+
+    const payload=await r.json();
+    const entries=payload.entries||[];
+
+    const title=$("liveWtfCalculated");
+    const note=$("liveWtfCalcNote");
+
+    if(!title)return;
+
+    if(entries.length===0){
+      title.textContent="No material event recorded";
+      if(note)note.textContent="Monitoring for meaningful changes";
+      return;
+    }
+
+    const latest=entries[0];
+
+    title.textContent=latest.title||"Material change detected";
+
+    if(note){
+      const parts=[];
+
+      if(latest.category)parts.push(latest.category);
+
+      if(latest.created_at){
+        parts.push(new Date(latest.created_at).toLocaleString());
+      }
+
+      note.textContent=parts.join(" · ");
+    }
+  }catch(err){
+    console.error("Journal unavailable",err);
+
+    const title=$("liveWtfCalculated");
+    const note=$("liveWtfCalcNote");
+
+    if(title)title.textContent="Material event unavailable";
+    if(note)note.textContent="Could not load canonical journal";
+  }
+}
+
+loadJournal();
+setInterval(loadJournal,60000);
+  loadScoreHistory();
 setInterval(loadScoreHistory,60000);
 setInterval(loadCanonicalState,60000);
    
