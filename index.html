@@ -1405,7 +1405,8 @@ html,body{max-width:100%;overflow-x:hidden}
 <span>Conflict, great-power spillover, nuclear risk, military posture, Energy, and Cyber are read from the live category engines. Economic pressure is a small 5% derived proxy until a dedicated macro feed is connected. Earth is tracked separately and only adds a limited overlay when Earth Pulse reaches unusually severe levels. Hard triggers still require verification and cannot fire from keyword matching alone.</span>
 </div>
 <section class="status-strip">
-<div class="status-piece"><span>LAST WTF CHANGE</span><b id="liveWtfDelta">Loading history…</b><small id="liveWtfDeltaNote">Checking canonical score history</small></div><div class="status-piece"><span>LAST MATERIAL EVENT</span><b id="liveWtfCalculated">Connecting</b><small id="liveWtfCalcNote">Live category engines loading</small></div>
+<div class="status-piece"><span>LAST WTF CHANGE</span><b id="liveWtfDelta">Loading history…</b><small id="liveWtfDeltaNote">Checking canonical score history</small></div><div class="status-piece"><span>LAST MATERIAL EVENT</span><b id="liveWtfCalculated">No material event recorded</b>
+<small id="liveWtfCalcNote">Monitoring for meaningful changes</small></div>
 <div class="status-piece"><span>DATA HEALTH</span><b class="healthy" id="liveWtfHealth">● Connecting</b><small id="liveWtfHealthNote">Conflict · Energy · Cyber · Earth</small></div>
 </section>
 <div class="section-title"><h2>Global pulse</h2><span>Tap a hotspot • mixed live + structural watch</span></div>
@@ -3136,6 +3137,23 @@ WTF_DATA.categories.conflict.score=Number(state.conflict_score);
 WTF_DATA.meta.lastCalculated=state.updated_at||new Date().toISOString();
 
 const score=Number(state.overall_score);
+        const health=$("liveWtfHealth");
+const healthNote=$("liveWtfHealthNote");
+
+if(health && healthNote){
+  const updatedAt=new Date(state.updated_at);
+  const ageMinutes=(Date.now()-updatedAt.getTime())/60000;
+
+  if(Number.isFinite(ageMinutes) && ageMinutes<=3){
+    health.textContent="● HEALTHY";
+    health.className="healthy";
+    healthNote.textContent=`Canonical data updated ${Math.max(0,Math.floor(ageMinutes))} min ago`;
+  }else{
+    health.textContent="● STALE";
+    health.className="partial";
+    healthNote.textContent="Canonical data has not updated recently";
+  }
+}
         const engineState=$("engineState");
 if(engineState){
   engineState.textContent="LIVE • CANONICAL";
