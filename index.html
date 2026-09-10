@@ -1405,8 +1405,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <span>Conflict, great-power spillover, nuclear risk, military posture, Energy, and Cyber are read from the live category engines. Economic pressure is a small 5% derived proxy until a dedicated macro feed is connected. Earth is tracked separately and only adds a limited overlay when Earth Pulse reaches unusually severe levels. Hard triggers still require verification and cannot fire from keyword matching alone.</span>
 </div>
 <section class="status-strip">
-<div class="status-piece"><span>LAST WTF CHANGE</span><b id="liveWtfDelta">Waiting for live score</b><small id="liveWtfDeltaNote">Will compare against the last score seen on this device</small></div>
-<div class="status-piece"><span>LAST MATERIAL EVENT</span><b id="liveWtfCalculated">Connecting</b><small id="liveWtfCalcNote">Live category engines loading</small></div>
+<div class="status-piece"><span>LAST WTF CHANGE</span><b id="liveWtfDelta">Loading history…</b><small id="liveWtfDeltaNote">Checking canonical score history</small></div><div class="status-piece"><span>LAST MATERIAL EVENT</span><b id="liveWtfCalculated">Connecting</b><small id="liveWtfCalcNote">Live category engines loading</small></div>
 <div class="status-piece"><span>DATA HEALTH</span><b class="healthy" id="liveWtfHealth">● Connecting</b><small id="liveWtfHealthNote">Conflict · Energy · Cyber · Earth</small></div>
 </section>
 <div class="section-title"><h2>Global pulse</h2><span>Tap a hotspot • mixed live + structural watch</span></div>
@@ -3177,6 +3176,53 @@ $("heroStatus").textContent=state.status||getStatus(score);
   }
 }
   loadCanonicalState();
+  async function loadScoreHistory(){
+  try{
+    const r=await fetch("/api/score-history",{cache:"no-store"});
+    if(!r.ok)throw new Error(`HTTP ${r.status}`);
+
+    const payload=await r.json();
+    const history=payload.history||[];
+
+    const delta=$("liveWtfDelta");
+    const note=$("liveWtfDeltaNote");
+
+    if(!delta)return;
+
+    if(history.length<2){
+      delta.textContent="Baseline established";
+      if(note)note.textContent=history.length
+        ? `Tracking from ${new Date(history[0].recorded_at).toLocaleString()}`
+        : "Waiting for first canonical history entry";
+      return;
+    }
+
+    const current=history[0];
+    const previous=history[1];
+
+    const currentScore=Number(current.overall_score);
+    const previousScore=Number(previous.overall_score);
+    const change=currentScore-previousScore;
+
+    delta.textContent=`${previousScore} → ${currentScore}`;
+
+    if(note){
+      note.textContent=
+        `${change>0?"+":""}${change} · ${new Date(current.recorded_at).toLocaleString()}`;
+    }
+  }catch(err){
+    console.error("Score history unavailable",err);
+
+    const delta=$("liveWtfDelta");
+    const note=$("liveWtfDeltaNote");
+
+    if(delta)delta.textContent="History unavailable";
+    if(note)note.textContent="Could not load canonical score history";
+  }
+}
+
+loadScoreHistory();
+setInterval(loadScoreHistory,60000);
 setInterval(loadCanonicalState,60000);
    
   // setTimeout(renderLive,500);
