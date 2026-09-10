@@ -281,10 +281,34 @@ font-size:.7rem;backdrop-filter:blur(8px)}
 .app-nav-btn.future .tab-icon{opacity:.75}
 .tab-label{line-height:1}
 @media(max-width:640px){
-  .app-nav-inner{gap:7px;padding:8px 10px}
-  .app-nav-btn{gap:7px;padding:8px 12px 8px 8px}
-  .tab-icon{width:28px;height:28px;border-radius:9px}
+  .app-nav-inner{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:7px;
+    padding:8px 10px;
+    overflow-x:hidden;
+  }
+  .app-nav-btn{
+    width:100%;
+    min-width:0;
+    justify-content:center;
+    gap:7px;
+    padding:8px 6px;
+    border-radius:12px;
+  }
+  .tab-icon{
+    width:28px;
+    height:28px;
+    border-radius:9px;
+    flex:0 0 auto;
+  }
   .tab-icon svg{width:18px;height:18px}
+  .tab-label{
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+}
 }
 </style><style>
 .tab-icon-conflict .clear-swords{
