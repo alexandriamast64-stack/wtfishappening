@@ -1252,9 +1252,54 @@ html,body{max-width:100%;overflow-x:hidden}
   content:"Material changes automatically expire from this view after 48 hours.";
   display:block;grid-column:1/-1;margin-top:6px;font-size:.54rem;color:#71809b
 }
+</style><style>
+.header-wtf{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-width:155px;
+  padding:8px 14px;
+  border:1px solid rgba(75,226,255,.18);
+  border-radius:14px;
+  background:rgba(255,255,255,.035);
+  box-shadow:0 0 18px rgba(75,226,255,.06);
+}
+.header-wtf-score{
+  font-size:1.55rem;
+  line-height:1;
+  font-weight:1000;
+  color:#fff;
+  font-variant-numeric:tabular-nums;
+}
+.header-wtf-copy{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+.header-wtf-copy strong{
+  font-size:.68rem;
+  letter-spacing:.05em;
+  color:#ff8fc7;
+  white-space:nowrap;
+}
+.header-wtf-copy small{
+  font-size:.52rem;
+  color:#7bf0b8;
+  font-weight:800;
+  letter-spacing:.05em;
+}
+@media(max-width:640px){
+  .header-wtf{
+    min-width:0;
+    padding:7px 9px;
+    gap:7px;
+  }
+  .header-wtf-score{font-size:1.2rem}
+  .header-wtf-copy strong{font-size:.56rem}
+}
 </style></head><!-- WTFisHappening v0.13: repaired page boundary -->
 <body>
-<div class="app"><header class="topbar"><div><div class="brand"><span class="wtf">WTF</span>isHappening</div><div class="live"><span class="dot"></span> LIVE DATA PROTOTYPE</div></div><div class="badge">HOSTED TEST</div></header>
+<div class="app"><header class="topbar"><div><div class="brand"><span class="wtf">WTF</span>isHappening</div><div class="live"><span class="dot"></span> LIVE DATA PROTOTYPE</div></div><div class="header-wtf" id="headerWtf"><span class="header-wtf-score" id="headerWtfScore">--</span><span class="header-wtf-copy"><strong id="headerWtfStatus">SYNCING…</strong><small>● LIVE</small></span></div></header>
 <nav aria-label="Primary" class="app-nav">
 <div class="nav-scroll-wrap"><div class="app-nav-inner">
 <button aria-current="page" class="app-nav-btn active" data-route="command" type="button"><span class="tab-icon tab-icon-command">
@@ -3059,6 +3104,14 @@ WTF_DATA.categories.conflict.score=Number(state.conflict_score);
 WTF_DATA.meta.lastCalculated=state.updated_at||new Date().toISOString();
 
 const score=Number(state.overall_score);
+        const headerScore=$("headerWtfScore");
+const headerStatus=$("headerWtfStatus");
+
+if(headerScore)headerScore.textContent=score;
+if(headerStatus)headerStatus.textContent=
+  score>=82?"UH OH 😬":
+  score>=44?"GETTING SPICY 🌶️":
+  "WE'RE CHILLIN";
 
 setHero(score);
 renderGauges();
